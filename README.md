@@ -4,9 +4,6 @@
 Minecraft: Java Edition. It is written in WGSL against Horizon's own shader API (0.1), so it runs on Vulkan, Metal
 and DirectX 12 and passes the same check the game, the launcher and the registry run.
 
-Horizon 전용 셰이더 팩입니다. Horizon 자체 셰이더 API(0.1)에 맞춰 WGSL로 작성했으며, 게임·런처·레지스트리가
-사용하는 공식 검사(`horizon-shader check`)를 통과합니다.
-
 ## Two packs, one source
 
 | Pack | For | Shadows |
@@ -16,9 +13,6 @@ Horizon 전용 셰이더 팩입니다. Horizon 자체 셰이더 API(0.1)에 맞�
 
 `pack/` is Meridian; `compat/` holds only the files that differ for the compat pack. `tools/build_packs.py` builds both
 into `dist/packs/`, and CI checks each against the Horizon it is for.
-
-이 저장소는 팩 두 개를 만듭니다. `meridian`은 최신 Nightly의 그림자 맵을 써서 시선과 상관없이 그림자가 일정하고,
-`meridian_compat`은 최신 릴리스(0.2.97)용 화면 공간 그림자 버전입니다.
 
 ## Effects (meridian, Nightly 2026-11-01+)
 

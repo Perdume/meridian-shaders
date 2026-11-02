@@ -5,9 +5,6 @@ A small Horizon **native mod** that lets you change the options of Horizon's own
 (on `main` from 2026-11-01) always builds a pack with every option at its default. This mod fills the
 gap until that page is in the version you play.
 
-Horizon 셰이더 팩(.hshader)의 옵션을 게임 안에서 바꾸는 작은 네이티브 모드입니다. Horizon 본체에
-셰이더 옵션 화면이 들어오기 전까지 그 빈자리를 메웁니다.
-
 ## Using it
 
 1. Install `hshader_options-<version>.hnmod` from the Mods page of the launcher (or put it in
