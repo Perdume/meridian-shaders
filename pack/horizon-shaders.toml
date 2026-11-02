@@ -2,7 +2,7 @@
 schema = 1
 id = "meridian"
 name = "Meridian"
-version = "0.6.0"
+version = "26.3.1"
 api = "0.1"
 description = "Shadow-mapped sun, scattered skies with stars and aurora, coloured block light, clear water with waves, caustics and reflections, PBR, ambient occlusion, bloom, depth of field, TAA and a filmic grade."
 authors = ["Meridian contributors"]
