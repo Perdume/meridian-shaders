@@ -1,0 +1,266 @@
+schema = 1
+id = "meridian_compat"
+name = "Meridian (screen-space shadows)"
+version = "0.6.0"
+api = "0.1"
+description = "Meridian for Horizon builds without a shadow map (0.2.97 and older Nightlies): screen-space and sky-light shadows."
+authors = ["Meridian contributors"]
+license = "MIT"
+shared = ["common.wgsl"]
+
+[sky]
+file = "sky.wgsl"
+name = "Atmosphere"
+
+[material]
+file = "material.wgsl"
+name = "Lit surfaces"
+
+[[post]]
+file = "post/shadows.wgsl"
+name = "Shadow trace"
+
+[[post]]
+file = "post/shadow_filter.wgsl"
+name = "Shadow filter"
+
+[[post]]
+file = "post/haze.wgsl"
+name = "Height haze"
+
+[[post]]
+file = "post/rays.wgsl"
+name = "Sun rays"
+
+[[post]]
+file = "post/bloom.wgsl"
+name = "Bloom"
+
+[[post]]
+file = "post/tonemap.wgsl"
+name = "Tone map and grade"
+
+[[post]]
+file = "post/sharpen.wgsl"
+name = "Sharpen"
+
+# ---------------------------------------------------------------- sky
+
+[[options]]
+id = "sky_scatter"
+name = "Sky scattering"
+description = "How much of the scattered sky replaces vanilla's by day."
+type = "float"
+default = 0.7
+min = 0.0
+max = 1.0
+step = 0.05
+
+[[options]]
+id = "sky_halo"
+name = "Sun halo"
+description = "The bright haze around the sun."
+type = "float"
+default = 0.6
+min = 0.0
+max = 1.0
+step = 0.05
+
+# ----------------------------------------------------------- material
+
+[[options]]
+id = "light_warmth"
+name = "Sunlight warmth"
+description = "Sunlit faces warm up, more so when the sun is low."
+type = "float"
+default = 0.5
+min = 0.0
+max = 1.0
+step = 0.05
+
+[[options]]
+id = "light_shade"
+name = "Shade coolness"
+description = "Faces turned away from the sun take the sky's blue."
+type = "float"
+default = 0.35
+min = 0.0
+max = 1.0
+step = 0.05
+
+[[options]]
+id = "light_torch"
+name = "Torch warmth"
+description = "Orange light near torches, lanterns and lava."
+type = "float"
+default = 0.6
+min = 0.0
+max = 1.0
+step = 0.05
+
+[[options]]
+id = "water_living"
+name = "Living water"
+description = "Ripples, sky reflections and sun glints on water."
+type = "bool"
+default = true
+
+[[options]]
+id = "water_waves"
+name = "Water waves"
+description = "How strongly the ripples bend the reflections."
+type = "float"
+default = 1.0
+min = 0.0
+max = 2.0
+step = 0.1
+
+[[options]]
+id = "water_reflection"
+name = "Water reflection"
+description = "How much of the sky the water mirrors at a glancing angle."
+type = "float"
+default = 0.6
+min = 0.0
+max = 1.0
+step = 0.05
+
+[[options]]
+id = "water_clarity"
+name = "Water clarity"
+description = "How deep you can see into water: murky at 0, crystal clear at 1."
+type = "float"
+default = 0.6
+min = 0.0
+max = 1.0
+step = 0.05
+
+[[options]]
+id = "water_tint"
+name = "Water colour"
+description = "The colour water scatters: its biome's (vanilla) or one of these."
+type = "choice"
+values = ["Biome", "Clear blue", "Turquoise", "Deep green"]
+default = "Biome"
+
+[[options]]
+id = "light_contrast"
+name = "Light contrast"
+description = "Darker shadows and caves above 1, flatter below."
+type = "float"
+default = 1.1
+min = 0.7
+max = 1.6
+step = 0.05
+
+# --------------------------------------------------------------- post
+
+[[options]]
+id = "shadow_strength"
+name = "Shadows"
+description = "Sun shadows of blocks, the player and mobs, traced on screen."
+type = "float"
+default = 0.7
+min = 0.0
+max = 1.0
+step = 0.05
+
+[[options]]
+id = "shadow_quality"
+name = "Shadow quality"
+description = "Steps per shadow ray: more catches thin casters, costs more."
+type = "choice"
+values = ["Low", "Medium", "High"]
+default = "Medium"
+
+[[options]]
+id = "shadow_distance"
+name = "Shadow distance"
+description = "How far from the camera shadows are drawn, in blocks."
+type = "float"
+default = 48.0
+min = 16.0
+max = 128.0
+step = 8.0
+
+[[options]]
+id = "air_haze"
+name = "Haze"
+description = "Distance haze, thicker low down and in the rain."
+type = "float"
+default = 0.4
+min = 0.0
+max = 1.0
+step = 0.05
+
+[[options]]
+id = "air_rays"
+name = "Sun rays"
+description = "Light shafts from the sun through gaps in the terrain."
+type = "float"
+default = 0.5
+min = 0.0
+max = 1.0
+step = 0.05
+
+[[options]]
+id = "lens_bloom"
+name = "Bloom"
+type = "float"
+default = 0.35
+min = 0.0
+max = 1.0
+step = 0.05
+
+[[options]]
+id = "tone_map"
+name = "Tone map"
+type = "choice"
+values = ["ACES", "Soft", "Off"]
+default = "ACES"
+
+[[options]]
+id = "tone_exposure"
+name = "Exposure"
+type = "float"
+default = 1.0
+min = 0.5
+max = 2.0
+step = 0.05
+
+[[options]]
+id = "tone_saturation"
+name = "Saturation"
+type = "float"
+default = 1.1
+min = 0.0
+max = 2.0
+step = 0.05
+
+[[options]]
+id = "tone_night"
+name = "Night vision shift"
+description = "Dark scenes turn bluer and less saturated, as eyes see at night."
+type = "float"
+default = 0.4
+min = 0.0
+max = 1.0
+step = 0.05
+
+[[options]]
+id = "lens_vignette"
+name = "Vignette"
+type = "bool"
+default = true
+
+[[options]]
+id = "lens_sharpen"
+name = "Sharpen"
+type = "float"
+default = 0.3
+min = 0.0
+max = 1.0
+step = 0.05
+
+[budget]
+gpu_ms = 2.0

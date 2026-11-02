@@ -1,0 +1,89 @@
+# Builds Meridian's two packs (tools/build_packs.py) and checks each with the
+# `horizon-shader check` the game, the launcher and the registry run:
+#   meridian         (the engine's shadow map) against Horizon's newest Nightly
+#   meridian_compat  (screen-space shadows)    against Horizon's latest release
+# Weekly too, so a Horizon release or Nightly that breaks a pack shows up here
+# first. A pushed `v*` tag publishes both .hshader files and the native mod.
+name: check
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find Horizon's latest release and newest Nightly
+        id: horizon
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          release=$(gh release view --repo horizon-rust/horizon --json tagName -q .tagName)
+          # The newest Nightly is the moving tag `nightly`: pin its commit.
+          nightly=$(gh api repos/horizon-rust/horizon/git/ref/tags/nightly -q .object.sha)
+          echo "release=$release" >> "$GITHUB_OUTPUT"
+          echo "nightly=$nightly" >> "$GITHUB_OUTPUT"
+          echo "release $release, nightly $nightly"
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache the checkers
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: checkers
+          key: horizon-shader-${{ steps.horizon.outputs.release }}-${{ steps.horizon.outputs.nightly }}
+
+      - name: Install both checkers
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          cargo install --locked --git https://github.com/horizon-rust/horizon \
+            --tag "${{ steps.horizon.outputs.release }}" --root checkers/release horizon-shader-api --bin horizon-shader
+          cargo install --locked --git https://github.com/horizon-rust/horizon \
+            --rev "${{ steps.horizon.outputs.nightly }}" --root checkers/nightly horizon-shader-api --bin horizon-shader
+
+      - name: Build and check both packs
+        run: |
+          python3 tools/build_packs.py dist/packs
+          checkers/nightly/bin/horizon-shader check dist/packs/meridian
+          checkers/release/bin/horizon-shader check dist/packs/meridian_compat
+          checkers/nightly/bin/horizon-shader pack dist/packs/meridian
+          checkers/release/bin/horizon-shader pack dist/packs/meridian_compat
+          mv dist/packs/*.hshader dist/
+          ls -l dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: meridian-hshader
+          path: dist/*.hshader
+
+      - name: Test and package the native mod
+        run: |
+          cargo test --manifest-path mod/test-harness/Cargo.toml
+          python3 tools/package_mod.py
+          ls -l dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hshader-options-hnmod
+          path: dist/*.hnmod
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" dist/*.hshader dist/*.hnmod \
+            --title "Meridian ${GITHUB_REF_NAME}" \
+            --notes "meridian: checked against Horizon ${{ steps.horizon.outputs.nightly }}. meridian_compat: checked against Horizon ${{ steps.horizon.outputs.release }}."

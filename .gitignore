@@ -1,0 +1,8 @@
+*.hshader
+/dist/
+/.horizon/
+mod/test-harness/Cargo.lock
+mod/test-harness/target/
+
+# Local helpers, not part of the project
+resume-claude.*

@@ -1,0 +1,17 @@
+# Builds the mod's game-independent logic (mixins/hshader_options/logic.rs) as a library to run
+# its tests: cargo test --manifest-path mod/test-harness/Cargo.toml
+[package]
+name = "hshader-options-logic"
+version = "0.1.0"
+edition = "2024"
+publish = false
+license = "MIT"
+
+[lib]
+path = "lib.rs"
+
+[dependencies]
+# The commit the mod was tested on (Nightly 2026-10-30).
+horizon-shader-api = { git = "https://github.com/horizon-rust/horizon", rev = "ba6344a59cb9e755b730dcf02285fc0d33b97d3c" }
+
+[workspace]
