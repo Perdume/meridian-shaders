@@ -44,8 +44,9 @@ Shader Options...): **Lighting** (13), **Shadows** (5), **Water** (9), **Sky** (
 right click down, shift-click resets one, Reset resets all. (Horizon draws a pack's options as buttons; sliders are
 only for `shaders/`-format packs.) `tools/make_manifest.py` generates the manifest, options and pages from one table.
 
-On Horizon 0.2.97 and older Nightlies, `meridian_compat`'s 23 options are its defaults, or every option in game with the
-native mod in [`mod/`](mod/README.md) (*Shader Pack Options*).
+Horizon 0.2.97 and older Nightlies have no Shader Options screen: `meridian_compat` runs with its defaults. (`mod/`
+holds *Shader Pack Options*, a native mod that adds one to those versions. It is not part of the releases: native mods
+are built per Horizon version and unsandboxed, and Horizon has the screen itself from Nightly 2026-11-01.)
 
 ## Install
 
@@ -76,7 +77,7 @@ and reloads it twice a second, keeping the last good version if the new one fail
 [`.github/workflows/check.yml`](.github/workflows/check.yml) builds both packs and checks `meridian` with the checker of
 **Horizon's newest Nightly** and `meridian_compat` with that of **Horizon's latest release**, on every push, pull request
 and weekly, so a Horizon version that changes the API breaks CI here before it breaks a player's game. Pushing a `v*`
-tag publishes both `.hshader` files and the native mod as a GitHub release.
+tag publishes both `.hshader` files as a GitHub release.
 
 Last checked against: `meridian` on Nightly 2026-11-01 (`c9d474d`), `meridian_compat` on v0.2.97 (shader API 0.1), and
 both in game.
@@ -91,7 +92,7 @@ pack/                     Meridian: manifest ([shadow]), shared helpers, stages
   post/shadows.wgsl (entity shadows) haze.wgsl rays.wgsl bloom.wgsl tonemap.wgsl sharpen.wgsl
 compat/                   the files that differ for meridian_compat (Horizon 0.2.97)
   horizon-shaders.toml  material.wgsl  post/shadows.wgsl  post/shadow_filter.wgsl
-mod/                      the Shader Pack Options native mod, for Horizon without its own options page
+mod/                      Shader Pack Options, a native mod for Horizon builds without an options screen (not released)
 tools/build_packs.py      builds dist/packs/meridian and dist/packs/meridian_compat
 tools/package_mod.py      packs mod/ into dist/hshader_options-<version>.hnmod
 .github/workflows/        CI: each pack against the Horizon it is for

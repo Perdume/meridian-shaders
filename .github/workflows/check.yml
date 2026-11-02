@@ -3,7 +3,7 @@
 #   meridian         (the engine's shadow map) against Horizon's newest Nightly
 #   meridian_compat  (screen-space shadows)    against Horizon's latest release
 # Weekly too, so a Horizon release or Nightly that breaks a pack shows up here
-# first. A pushed `v*` tag publishes both .hshader files and the native mod.
+# first. A pushed `v*` tag publishes both .hshader files as a release.
 name: check
 
 on:
@@ -84,6 +84,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" dist/*.hshader dist/*.hnmod \
+          gh release create "${GITHUB_REF_NAME}" dist/*.hshader \
             --title "Meridian ${GITHUB_REF_NAME}" \
             --notes "meridian: checked against Horizon ${{ steps.horizon.outputs.nightly }}. meridian_compat: checked against Horizon ${{ steps.horizon.outputs.release }}."
