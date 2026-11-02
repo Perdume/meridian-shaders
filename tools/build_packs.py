@@ -43,11 +43,12 @@ def build(name: str, layers: list[Path], out: Path) -> None:
             raise
         (dest / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(src, dest / rel)
-    print(f"{name}: {sum(1 for p in dest.rglob('*') if p.is_file())} files in {dest.relative_to(ROOT)}")
+    shown = dest.relative_to(ROOT) if dest.is_relative_to(ROOT) else dest
+    print(f"{name}: {sum(1 for p in dest.rglob('*') if p.is_file())} files in {shown}")
 
 
 def main() -> int:
-    out = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "dist" / "packs"
+    out = (Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "dist" / "packs").resolve()
     build("meridian", [ROOT / "pack"], out)
     build("meridian_compat", [ROOT / "pack", ROOT / "compat"], out)
     return 0
