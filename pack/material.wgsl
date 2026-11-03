@@ -50,13 +50,18 @@ fn screen_point(uv: vec2<f32>, depth: f32) -> vec3<f32> {
     return (frame.view_inverse * vec4<f32>(v.xyz / v.w, 0.0)).xyz;
 }
 
-// The colour water scatters back: its biome's (vanilla's) or a chosen one.
+// The colour deep water scatters back: dark and only a little blue, as real
+// water, from its biome's tint (vanilla's bright blue, toned down) or a
+// chosen one. Not the water texture: its pattern read as pixel noise.
 fn water_color(biome: vec3<f32>) -> vec3<f32> {
     switch water_tint {
-        case 1u: { return vec3<f32>(0.16, 0.42, 0.78); }
-        case 2u: { return vec3<f32>(0.10, 0.58, 0.62); }
-        case 3u: { return vec3<f32>(0.12, 0.34, 0.26); }
-        default: { return biome; }
+        case 1u: { return vec3<f32>(0.06, 0.18, 0.34); }
+        case 2u: { return vec3<f32>(0.05, 0.25, 0.28); }
+        case 3u: { return vec3<f32>(0.06, 0.16, 0.12); }
+        default: {
+            let calm = mix(vec3<f32>(luma(biome)), biome, 0.55);
+            return calm * vec3<f32>(0.32, 0.5, 0.52);
+        }
     }
 }
 
@@ -106,10 +111,10 @@ fn water_body(input: MaterialInput, wn: vec3<f32>, lit: vec3<f32>) -> vec4<f32> 
     }
     let thickness = select(64.0, max(length(bottom) - here, 0.0), depth > 0.0);
     let behind = textureLoad(opaque_color, vec2<i32>(uv * size), 0).rgb;
-    let reach = mix(1.5, 14.0, water_clarity * water_clarity);
-    let absorb = vec3<f32>(0.45, 0.16, 0.10) * (4.0 / reach);
+    let reach = mix(2.0, 20.0, water_clarity * water_clarity);
+    let absorb = vec3<f32>(0.30, 0.11, 0.08) * (4.0 / reach);
     let through = exp(-absorb * thickness);
-    let scatter = water_color(input.tint.rgb * input.albedo.rgb) * lit;
+    let scatter = water_color(input.tint.rgb) * lit;
     let fog = 1.0 - exp(-thickness / reach);
     let t = frame.time;
     let floor_at = frame.camera_position.xz + bottom.xz;
