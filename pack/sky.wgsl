@@ -53,11 +53,17 @@ fn sky(input: SkyInput) -> vec4<f32> {
 
     // High thin clouds (cirrus), drifting, lit by the sun and coloured at dusk.
     if sky_cirrus > 0.0 && d.y > 0.02 && frame.dimension == 0 {
-        let plane = d.xz / (d.y + 0.15) * 3.0 + vec2<f32>(frame.time * 0.004, frame.time * 0.002);
-        let streak = fbm2(plane * vec2<f32>(1.0, 3.0));
-        let cloud = smoothstep(0.5, 0.85, streak) * smoothstep(0.02, 0.25, d.y) * sky_cirrus;
-        let lit = mix(vec3<f32>(0.25, 0.27, 0.35), sun_tint() * 1.1, day) * mix(1.0, 0.6, wet);
-        c = mix(c, lit, cloud * 0.6);
+        // Projected on a high plane, broad and soft: patches of wisps, bent by
+        // a second noise so they don't read as parallel streaks, with clear
+        // sky between them.
+        let plane = d.xz / (d.y + 0.3) * 1.2 + vec2<f32>(frame.time * 0.003, frame.time * 0.0015);
+        let warp = vec2<f32>(fbm2(plane * 0.7), fbm2(plane * 0.7 + 31.7)) - 0.5;
+        let wind = vec2<f32>(plane.x * 0.8 + plane.y * 0.6, plane.y * 0.8 - plane.x * 0.6);
+        let wisps = fbm2((wind + warp * 2.5) * vec2<f32>(1.0, 2.0));
+        let patches = smoothstep(0.4, 0.65, fbm2(plane * 0.35 + 7.3));
+        let cloud = smoothstep(0.55, 0.85, wisps) * patches * smoothstep(0.03, 0.3, d.y) * sky_cirrus;
+        let lit = mix(vec3<f32>(0.25, 0.27, 0.35), sun_tint() * 1.05, day) * mix(1.0, 0.6, wet);
+        c = mix(c, lit, cloud * 0.45);
     }
 
     // At night: stars, the band of the Milky Way, and in cold biomes an aurora.
